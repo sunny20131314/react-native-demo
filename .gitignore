@@ -1,0 +1,8 @@
+# 忽略所有的
+.DS_Store
+
+# 忽略所有的 .idea/ 文件
+.idea
+
+# 忽略私有文件 private
+private
