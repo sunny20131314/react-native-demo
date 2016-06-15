@@ -12,43 +12,44 @@ import  ReactNative,{
   View
 } from 'react-native';
 
-
-var regionText = {
+let regionText = {
   latitude: '0',
   longitude: '0',
   latitudeDelta: '0',
   longitudeDelta: '0'
 };
 
-var MapRegionInput = React.createClass({
+class MapRegionInput extends Component {
+  constructor(props){
+    super(props);
 
-  propTypes: {
+    this.state = {
+      region: {
+        latitude: 0,
+        longitude: 0
+      }
+    };
+  }
+
+  static propTypes = {
     region: PropTypes.shape({
       latitude: PropTypes.number.isRequired,
       longitude: PropTypes.number.isRequired,
       latitudeDelta: PropTypes.number,
-      longitudeDelta: PropTypes.number,
+      longitudeDelta: PropTypes.number
     }),
-    onChange: PropTypes.func.isRequired,
-  },
+    onChange: PropTypes.func.isRequired
+  };
 
-  getInitialState() {
-    return {
-      region: {
-        latitude: 0,
-        longitude: 0,
-      }
-    };
-  },
-
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps(nextProps) {
+    console.log('MapRegionInput, componentWillReceiveProps', nextProps);
     this.setState({
-      region: nextProps.region || this.getInitialState().region
+      region: nextProps.region || this.state.region
     });
-  },
+  }
 
-  render: function() {
-    var region = this.state.region || this.getInitialState().region;
+  render() {
+    var region = this.state.region;
     return (
       <View>
         <View style={styles.row}>
@@ -58,7 +59,7 @@ var MapRegionInput = React.createClass({
           <TextInput
             value={'' + region.latitude}
             style={styles.textInput}
-            onChange={this._onChangeLatitude}
+            onChange={this._onChangeLatitude.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
@@ -69,7 +70,7 @@ var MapRegionInput = React.createClass({
           <TextInput
             value={'' + region.longitude}
             style={styles.textInput}
-            onChange={this._onChangeLongitude}
+            onChange={this._onChangeLongitude.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
@@ -79,10 +80,10 @@ var MapRegionInput = React.createClass({
           </Text>
           <TextInput
             value={
-              region.latitudeDelta == null ? '' : String(region.latitudeDelta)
-            }
+                region.latitudeDelta == null ? '' : String(region.latitudeDelta)
+              }
             style={styles.textInput}
-            onChange={this._onChangeLatitudeDelta}
+            onChange={this._onChangeLatitudeDelta.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
@@ -92,56 +93,54 @@ var MapRegionInput = React.createClass({
           </Text>
           <TextInput
             value={
-              region.longitudeDelta == null ? '' : String(region.longitudeDelta)
-            }
+                region.longitudeDelta == null ? '' : String(region.longitudeDelta)
+              }
             style={styles.textInput}
-            onChange={this._onChangeLongitudeDelta}
+            onChange={this._onChangeLongitudeDelta.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
         <View style={styles.changeButton}>
-          <Text onPress={this._change}>
+          <Text onPress={this._change.bind(this)}>
             {'Change'}
           </Text>
         </View>
       </View>
     );
-  },
+  }
 
-  _onChangeLatitude: function(e) {
+  _onChangeLatitude(e) {
+    console.log('_onChangeLatitude',e, e.nativeEvent);
     regionText.latitude = e.nativeEvent.text;
-  },
+  }
 
-  _onChangeLongitude: function(e) {
+  _onChangeLongitude(e) {
     regionText.longitude = e.nativeEvent.text;
-  },
+  }
 
-  _onChangeLatitudeDelta: function(e) {
+  _onChangeLatitudeDelta(e) {
     regionText.latitudeDelta = e.nativeEvent.text;
-  },
+  }
 
-  _onChangeLongitudeDelta: function(e) {
+  _onChangeLongitudeDelta(e) {
     regionText.longitudeDelta = e.nativeEvent.text;
-  },
+  }
 
-  _change: function() {
+  _change() {
     this.setState({
       region: {
         latitude: parseFloat(regionText.latitude),
         longitude: parseFloat(regionText.longitude),
         latitudeDelta: parseFloat(regionText.latitudeDelta),
         longitudeDelta: parseFloat(regionText.longitudeDelta),
-      },
+      }
     });
+    // 传递给父组件
     this.props.onChange(this.state.region);
-  },
-
-});
-export default class Map extends Component {
-
+  }
 }
 
-class MapViewExample extends Component {
+export default class MapViewExample extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -153,17 +152,80 @@ class MapViewExample extends Component {
   }
 
   render() {
+    // 如何一开始获取到 相应的 region
+    //  mapType: 要显示的地图类型 enum 'standard', 'satellite'卫星视图, 'hybrid'卫星视图并附带道路和感兴趣的点标记
+    // annotations : 地图上的标注点，可以带有标题及副标题。
+                  // [{latitude: number, longitude: number, animateDrop: bool, title: string, subtitle: string, hasLeftCallout: bool, hasRightCallout: bool, onLeftCalloutPress: function, onRightCalloutPress: function, id: string}]
+    // legalLabelInsets {top: number, left: number, bottom: number, right: number}
+                  // 地图上标签的合法范围。默认在地图底部左侧。
+    // overlays 地图的覆盖层。
+    // pitchEnabled 当此属性设为true并且地图上关联了一个有效的镜头时，镜头的抬起角度会使地图平面倾斜。当此属性设为false，镜头的抬起角度会忽略，地图永远都显示为俯视角度。
+    // rotateEnabled 当此属性设为true并且地图上关联了一个有效的镜头时，镜头的朝向角度会用于基于中心点旋转地图平面。当此属性设置为false时，朝向角度会被忽略，并且地图永远都显示为顶部方向为正北方。
+    // scrollEnabled 如果此属性设为false，用户不能改变地图所显示的区域。默认值为true。
+    // showsUserLocation bool 如果此属性为true，应用会请求用户当前的位置并且聚焦到该位置。默认值是false。
+
+
+
     return (
       <View>
         <MapView
           style={styles.map}
-          onRegionChange={this._onRegionChange.bind(this)}
-          onRegionChangeComplete={this._onRegionChangeComplete.bind(this)}
+          mapType={'hybrid'}
           region={this.state.mapRegion}
           annotations={this.state.annotations}
+          overlays={[{
+            coordinates:[
+              {latitude: 32.47, longitude: 107.85},
+              {latitude: 45.13, longitude: 114.48},
+              {latitude: 39.27, longitude: 123.25},
+              {latitude: 32.47, longitude: 107.85},
+            ],
+            strokeColor: '#f007',
+            lineWidth: 3
+          }]}
+          pitchEnabled={true}
+          rotateEnabled={true}
+          scrollEnabled={false}
+          showsUserLocation={true}
+
+          onAnnotationPress={(annotation) => {
+            // 当用户点击地图上的标注之后会调用此回调函数一次。
+            // 参数 : 是指  Annotation标注点 的相关信息
+            //console.log('annotation', annotation);
+          }}
+          onRegionChange={(region) => {
+            // 在用户拖拽地图的时候持续调用此回调函数。
+            //console.log('draging', region);
+
+
+            // 同步数据到子组件!!!
+            this.setState({
+              mapRegionInput: region
+            });
+          }}
+          onRegionChangeComplete={(region) => {
+            // 当用户停止拖拽地图之后，调用此回调函数一次。
+            //console.log('stop drag', region);
+            console.log(this.state.isFirstLoad);
+            if (this.state.isFirstLoad) {
+              this.setState({
+                mapRegionInput: region,
+                annotations: this._getAnnotations(region),
+                isFirstLoad: false
+              });
+            }
+          }
+        }
         />
         <MapRegionInput
-          onChange={this._onRegionInputChanged.bind(this)}
+          onChange={(region) => {
+            console.log( 'MapViewExample', region );
+            this.setState({
+              mapRegion: region,
+              mapRegionInput: region,
+              annotations: this._getAnnotations(region)
+            });
+          }}
           region={this.state.mapRegionInput}
         />
       </View>
@@ -171,84 +233,22 @@ class MapViewExample extends Component {
   }
 
   _getAnnotations(region) {
-    console.log(region);
+    console.log('_getAnnotations', region);
     return [{
       longitude: region.longitude,
       latitude: region.latitude,
-      title: 'You Are Here'
+      subtitle: ' does it`s right? ',
+      title: 'You Are Here~'
     }];
   }
-
-  _onRegionChange(region) {
-    this.setState({
-      mapRegionInput: region
-    });
-  }
-
-  _onRegionChangeComplete(region) {
-    console.log(region);
-    console.log(this.state.isFirstLoad);
-    if (this.state.isFirstLoad) {
-      this.setState({
-        mapRegionInput: region,
-        annotations: this._getAnnotations(region),
-        isFirstLoad: false
-      });
-    }
-  }
-
-  _onRegionInputChanged(region) {
-    this.setState({
-      mapRegion: region,
-      mapRegionInput: region,
-      annotations: this._getAnnotations(region)
-    });
-  }
-
 }
-
-var AnnotationExample = React.createClass({
-
-  getInitialState() {
-    return {
-      isFirstLoad: true,
-      annotations: [],
-      mapRegion: undefined,
-    };
-  },
-
-  render() {
-    if (this.state.isFirstLoad) {
-      var onRegionChangeComplete = (region) => {
-        this.setState({
-          isFirstLoad: false,
-          annotations: [{
-            longitude: region.longitude,
-            latitude: region.latitude,
-            ...this.props.annotation,
-          }],
-        });
-      };
-    }
-
-    return (
-      <MapView
-        style={styles.map}
-        onRegionChangeComplete={onRegionChangeComplete}
-        region={this.state.mapRegion}
-        annotations={this.state.annotations}
-      />
-    );
-  },
-
-});
 
 var styles = StyleSheet.create({
   map: {
-    height: 150,
-    margin: 10,
+    height: 500,
+    margin: 6,
     borderWidth: 1,
-    borderColor: '#000000',
+    borderColor: '#000000'
   },
   row: {
     flexDirection: 'row',

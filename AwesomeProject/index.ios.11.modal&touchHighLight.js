@@ -91,7 +91,9 @@ export default class ModalExample extends Component {
 
   render() {
     var modalBackgroundStyle = {
-      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
+      backgroundColor: this.state.transparent
+        ? 'rgba(0, 0, 0, 0.5)'
+        : '#f5fcff'
     };
     var innerContainerTransparentStyle = this.state.transparent
       ? {backgroundColor: '#fff', padding: 20}
@@ -102,13 +104,29 @@ export default class ModalExample extends Component {
       backgroundColor: '#ddd'
     };
 
+
+    // animationType enum('none', 'slide', 'fade')   madal 出现的动画效果
+    // transparent : bool
+    // visible : bool
+
+    // onShow : function
+    // onRequestClose Platform.OS === 'android' ? PropTypes.func.isRequired : PropTypes.func
+
     return (
       <View>
         <Modal
           animationType={this.state.animationType}
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
-          onRequestClose={() => {this._setModalVisible(false)}}
+          onshow={() => {
+            alert(1);
+            console.log(Platform.OS === 'android');
+          }}
+          onRequestClose={(a) => {
+            console.log(a);
+            console.log(Platform.OS === 'android');
+            this._setModalVisible(false)}
+          }
         >
           <View style={[styles.container, modalBackgroundStyle]}>
             <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
@@ -145,7 +163,10 @@ export default class ModalExample extends Component {
 
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Transparent</Text>
-          <Switch value={this.state.transparent} onValueChange={this._toggleTransparent.bind(this)} />
+          <Switch
+            value={this.state.transparent}
+            onValueChange={this._toggleTransparent.bind(this)}
+          />
         </View>
 
         <Button onPress={this._setModalVisible.bind(this, true)}>
