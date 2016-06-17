@@ -1,3 +1,7 @@
+/*
+ * 进度条
+ * */
+
 'use strict';
 
 var React = require('react');

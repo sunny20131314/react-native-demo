@@ -23,7 +23,7 @@ export default class FirstPageComponent extends React.Component {
     };
   }
 
-  static propTypes: {
+  static propTypes = {
     navigator: React.PropTypes.object.isRequired
     };
 

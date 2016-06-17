@@ -14,7 +14,7 @@ import ReactNative, {
   ActivityIndicatorIOS,
 } from 'react-native';
 
-class TabBarIOSDemo extends Component {
+export default class TabBarIOSDemo extends Component {
   constructor(props){
     super(props);
     this.state = {

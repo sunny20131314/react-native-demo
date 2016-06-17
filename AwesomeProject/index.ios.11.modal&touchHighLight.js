@@ -58,7 +58,8 @@ class Button extends Component{
         onPress={this.props.onPress}
         onShowUnderlay={this._onHighlight.bind(this)}
         style={[styles.button, this.props.style]}
-        underlayColor="rgba(255, 0, 0, 0.5)">
+        underlayColor="rgba(255, 0, 0, 0.5)"
+      >
         <Text style={[styles.buttonText, colorStyle]}>{this.props.children}</Text>
       </TouchableHighlight>
     );

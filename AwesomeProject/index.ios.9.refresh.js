@@ -71,6 +71,10 @@ export default class RefreshControlExample extends Component {
     const rows = this.state.rowData.map((row, ii) => {
       return <Row key={ii} data={row} onClick={this._onClick.bind(this)}/>;
     });
+
+    // colors   安卓: ={['#ff0000', '#00ff00', '#0000ff']}
+    // progressBackgroundColor ColorPropType   指定刷新指示器的背景色。            progressBackgroundColor="#00f"
+    //
     return (
       <ScrollView
         style={styles.scrollview}
@@ -78,11 +82,9 @@ export default class RefreshControlExample extends Component {
           <RefreshControl
             refreshing={this.state.isRefreshing}
             onRefresh={this._onRefresh.bind(this)}
-            tintColor="#ff0000"
+            tintColor="#ff0"
             title="Loading..."
             titleColor="#00ff00"
-            colors={['#ff0000', '#00ff00', '#0000ff']}
-            progressBackgroundColor="#ffff00"
           />
         }>
         {rows}
@@ -101,7 +103,6 @@ export default class RefreshControlExample extends Component {
         }))
         .concat(this.state.rowData);
 
-      alert( this.state.loaded );
       this.setState({
         loaded: this.state.loaded + 10,
         isRefreshing: false,
