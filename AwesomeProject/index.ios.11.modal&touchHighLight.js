@@ -8,6 +8,7 @@ import React, {Component} from 'react';
 var ReactNative = require('react-native');
 var {
   AppRegistry,
+  Platform,
   Modal,
   StyleSheet,
   Switch,
