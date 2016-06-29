@@ -51,7 +51,7 @@ export default class AwesomeProject extends Component {
         rowHasChanged: (row1, row2) => {
           //console.log(row1);
           //console.log(row2);
-          row1 !== row2;
+          return row1 !== row2;
         }
       }),
 
@@ -251,6 +251,9 @@ const styles = StyleSheet.create({
 
 // AppRegistry 定义了App的入口，并提供了根组件。
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);
+
+
+
 
 
 import React from 'react';

@@ -48,7 +48,7 @@ export default class ScrollViewExample extends Component {
   }
 
   render() {
-    var _scrollView: ScrollView;
+    var _scrollView = ScrollView;
     var isVerticle = true;
     if( isVerticle ){
 
