@@ -204,6 +204,7 @@ export default class AwesomeProject extends Component {
           initialListSize={20}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={true}
+          enableEmptySections={true}  //允许无 section
           refreshControl={
             <RefreshControl
               refreshing={false}

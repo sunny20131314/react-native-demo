@@ -1,3 +1,5 @@
+/*
+* 地图*/
 'use strict';
 
 import React, {Component, PropTypes} from 'react';
