@@ -11,6 +11,7 @@ import  ReactNative,{
   Text,
   TextInput,
   TouchableOpacity,
+  ScrollView,
   View
 } from 'react-native';
 
@@ -20,6 +21,19 @@ let regionText = {
   latitudeDelta: '0',
   longitudeDelta: '0'
 };
+
+// -- del
+var a =  <MapRegionInput
+  onChange={(region) => {
+            console.log( 'MapViewExample', region );
+            this.setState({
+              mapRegion: region,
+              mapRegionInput: region,
+              annotations: this._getAnnotations(region)
+            });
+          }}
+  region={this.state.mapRegionInput}
+/>;
 
 class MapRegionInput extends Component {
   constructor(props){
@@ -44,7 +58,7 @@ class MapRegionInput extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    console.log('MapRegionInput, componentWillReceiveProps', nextProps);
+    //console.log('MapRegionInput, componentWillReceiveProps', nextProps);
     this.setState({
       region: nextProps.region || this.state.region
     });
@@ -61,7 +75,8 @@ class MapRegionInput extends Component {
           <TextInput
             value={'' + region.latitude}
             style={styles.textInput}
-            onChange={this._onChangeLatitude.bind(this)}
+            //onChangeText={this._onChangeLatitude.bind(this)}
+            onChangeText={( text ) => regionText.latitude = text}
             selectTextOnFocus={true}
           />
         </View>
@@ -72,7 +87,8 @@ class MapRegionInput extends Component {
           <TextInput
             value={'' + region.longitude}
             style={styles.textInput}
-            onChange={this._onChangeLongitude.bind(this)}
+            onChangeText={( text ) => regionText.longitude = text}
+            //onChange={this._onChangeLongitude.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
@@ -85,7 +101,8 @@ class MapRegionInput extends Component {
                 region.latitudeDelta == null ? '' : String(region.latitudeDelta)
               }
             style={styles.textInput}
-            onChange={this._onChangeLatitudeDelta.bind(this)}
+            onChangeText={( text ) => regionText.latitudeDelta = text}
+            //onChange={this._onChangeLatitudeDelta.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
@@ -98,7 +115,8 @@ class MapRegionInput extends Component {
                 region.longitudeDelta == null ? '' : String(region.longitudeDelta)
               }
             style={styles.textInput}
-            onChange={this._onChangeLongitudeDelta.bind(this)}
+            onChangeText={( text ) => regionText.longitudeDelta = text}
+            //onChange={this._onChangeLongitudeDelta.bind(this)}
             selectTextOnFocus={true}
           />
         </View>
@@ -109,23 +127,6 @@ class MapRegionInput extends Component {
         </View>
       </View>
     );
-  }
-
-  _onChangeLatitude(e) {
-    console.log('_onChangeLatitude',e, e.nativeEvent);
-    regionText.latitude = e.nativeEvent.text;
-  }
-
-  _onChangeLongitude(e) {
-    regionText.longitude = e.nativeEvent.text;
-  }
-
-  _onChangeLatitudeDelta(e) {
-    regionText.latitudeDelta = e.nativeEvent.text;
-  }
-
-  _onChangeLongitudeDelta(e) {
-    regionText.longitudeDelta = e.nativeEvent.text;
   }
 
   _change() {
@@ -157,22 +158,23 @@ export default class MapViewExample extends Component {
     // 如何一开始获取到 相应的 region
     //  mapType: 要显示的地图类型 enum 'standard', 'satellite'卫星视图, 'hybrid'卫星视图并附带道路和感兴趣的点标记
     // annotations : 地图上的标注点，可以带有标题及副标题。
-                  // [{latitude: number, longitude: number, animateDrop: bool, title: string, subtitle: string, hasLeftCallout: bool, hasRightCallout: bool, onLeftCalloutPress: function, onRightCalloutPress: function, id: string}]
+    //   [{latitude: number, longitude: number, animateDrop: bool, title: string, subtitle: string, hasLeftCallout: bool, hasRightCallout: bool, onLeftCalloutPress: function, onRightCalloutPress: function, id: string}]
     // legalLabelInsets {top: number, left: number, bottom: number, right: number}
-                  // 地图上标签的合法范围。默认在地图底部左侧。
+    // 地图上标签的合法范围。默认在地图底部左侧。
     // overlays 地图的覆盖层。
     // pitchEnabled 当此属性设为true并且地图上关联了一个有效的镜头时，镜头的抬起角度会使地图平面倾斜。当此属性设为false，镜头的抬起角度会忽略，地图永远都显示为俯视角度。
     // rotateEnabled 当此属性设为true并且地图上关联了一个有效的镜头时，镜头的朝向角度会用于基于中心点旋转地图平面。当此属性设置为false时，朝向角度会被忽略，并且地图永远都显示为顶部方向为正北方。
-    // scrollEnabled 如果此属性设为false，用户不能改变地图所显示的区域。默认值为true。
+    // scrollEnabled 是否可以拖动修改视图 如果此属性设为false，用户不能改变地图所显示的区域。默认值为true。
     // showsUserLocation bool 如果此属性为true，应用会请求用户当前的位置并且聚焦到该位置。默认值是false。
-
+    // zoomEnabled 放大缩小, 默认 true
+    // followUserLocation ios如果真的地图将遵循用户的位置时，它的变化。请注意，这没有效果，除非showsuserlocation启用。默认值是真的。
 
 
     return (
-      <View>
+      <ScrollView>
         <MapView
           style={styles.map}
-          mapType={'hybrid'}
+          mapType={'standard'}
           region={this.state.mapRegion}
           annotations={this.state.annotations}
           overlays={[{
@@ -185,20 +187,19 @@ export default class MapViewExample extends Component {
             strokeColor: '#f007',
             lineWidth: 3
           }]}
-          pitchEnabled={true}
-          rotateEnabled={true}
-          scrollEnabled={false}
-          showsUserLocation={true}
+          //pitchEnabled={true}
+          //rotateEnabled={true}
+          //scrollEnabled={true}
+          //showsUserLocation={false}
+          showsCompass={true}
+          //active={true}  //android
+          followUserLocation={true}
 
-          onAnnotationPress={(annotation) => {
-            // 当用户点击地图上的标注之后会调用此回调函数一次。
-            // 参数 : 是指  Annotation标注点 的相关信息
-            //console.log('annotation', annotation);
-          }}
+          legalLabelInsets={{top: 10, left: 10, right: 10, bottom: 10}}
+
           onRegionChange={(region) => {
             // 在用户拖拽地图的时候持续调用此回调函数。
             //console.log('draging', region);
-
 
             // 同步数据到子组件!!!
             this.setState({
@@ -209,13 +210,13 @@ export default class MapViewExample extends Component {
             // 当用户停止拖拽地图之后，调用此回调函数一次。
             //console.log('stop drag', region);
             console.log(this.state.isFirstLoad);
-            if (this.state.isFirstLoad) {
+            //if (this.state.isFirstLoad) {
               this.setState({
                 mapRegionInput: region,
                 annotations: this._getAnnotations(region),
                 isFirstLoad: false
               });
-            }
+            //}
           }
         }
         />
@@ -230,16 +231,45 @@ export default class MapViewExample extends Component {
           }}
           region={this.state.mapRegionInput}
         />
-      </View>
+      </ScrollView>
     );
   }
 
   _getAnnotations(region) {
+    // 标注点 相关
     console.log('_getAnnotations', region);
+    //annotation={{
+    //  title: 'More Info...',
+    //    ,
+    //}}
     return [{
       longitude: region.longitude,
       latitude: region.latitude,
       subtitle: ' does it`s right? ',
+      draggable: true,
+      onDragStateChange: (event) => {
+        console.log('Drag state: ' + event.state);
+      },
+      rightCalloutView: (
+        <TouchableOpacity
+          onPress={() => {
+              console.log('You Are Here~~~~~~~~~~~');
+            }}>
+          <Image
+            style={{width:28, height:33}}
+            source={require('./img/location1.png')}
+          />
+        </TouchableOpacity>
+      ),
+      //onFocus: (annotation) => {
+      //  // 当用户点击地图上的标注之后会调用此回调函数一次。
+      //  // 参数 : 是指  Annotation标注点 的相关信息
+      //  console.log('onFocus!!!!!!!!!!!!!!', annotation);
+      //},
+      //onBlur: (annotation) => {
+      //  console.log('onBlur!!!!!!!!!!!!!!', annotation);
+      //},
+      tintColor: MapView.PinColors.PURPLE,
       title: 'You Are Here~'
     }];
   }
