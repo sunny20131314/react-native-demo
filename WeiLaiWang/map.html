@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <style type="text/css">
+    body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+  </style>
+  <title>百度地图</title>
+</head>
+<body>
+
+<div id="allmap"></div>
+
+
+
+
+<!--1.4以下不需要密匙-->
+<!--<script src="http://api.map.baidu.com/api?v=1.4" type="text/javascript"></script>-->
+<!--使用V2.0版本的引用方式：-->
+<script src="http://api.map.baidu.com/api?v=2.0&ak=QOeewGRF8itW2Kt4DcFT9rT7XxsSS0br" type="text/javascript"></script>
+<!--<script src="http://api.map.baidu.com/api?v=2.0" type="text/javascript"></script>-->
+<script type="text/javascript">
+  // 百度地图API功能
+  // new BMap.Map 创建Map实例 - 注意在调用此构造函数时应确保容器元素已经添加到地图上。
+//  var map = new BMap.Map("allmap");  //// 创建Map实例,设置地图允许的最小/大级别
+  var map = new BMap.Map(
+    "allmap",
+    {
+      minZoom:4,
+      maxZoom:20,
+//      enableMapClick:false,  //关闭底图可点功能
+    });  //// 创建Map实例,设置地图允许的最小/大级别
+  // new BMap.Point 创建一个坐标点。Point类描述了一个地理坐标点，其中116.404表示经度，39.915表示纬度。
+  var point = new BMap.Point(116.404, 39.915);
+  // map.centerAndZoom `初始化地图`，设置中心点坐标和 地图级别13
+  // 地图必须经过初始化才可以执行其他操作。
+  map.centerAndZoom(point, 13);
+
+  /*!! 标注 start*/
+  // -- 是否可设置背景图的大小?
+  var myIcon = new BMap.Icon("./img/location1.png", new BMap.Size(56,67));
+  var marker = new BMap.Marker(point, {
+      icon: myIcon
+    });  // 创建标注
+  map.addOverlay(marker);              // 将标注添加到地图中
+
+  /*添加多个标注*/
+  // -- 可点击否?
+  // 编写自定义函数,创建标注
+  function addMarker(point,label){
+    var marker = new BMap.Marker(point);
+    map.addOverlay(marker);
+    label && marker.setLabel(label);
+  }
+  function deletePoint(){  // 删除固定点
+    var allOverlay = map.getOverlays();
+    for (var i = 0; i < allOverlay.length -1; i++){
+      if(allOverlay[i].getLabel() && allOverlay[i].getLabel().content == "我是id=1"){
+        map.removeOverlay(allOverlay[i]);
+        return false;
+      }
+    }
+  }
+  // 随机向地图添加10个标注
+  var bounds = map.getBounds();  //获取可视区域
+  var sw = bounds.getSouthWest(); //可视区域左下角
+  var ne = bounds.getNorthEast(); //可视区域右上角
+  var lngSpan = Math.abs(sw.lng - ne.lng);
+  var latSpan = Math.abs(ne.lat - sw.lat);
+  for (var i = 0; i < 10; i ++) {
+    var pointA = new BMap.Point(sw.lng + lngSpan * (Math.random() * 0.7), ne.lat - latSpan * (Math.random() * 0.7));
+    var labelA = new BMap.Label("我是id="+i,{offset:new BMap.Size(20,-10)});
+    addMarker(pointA, labelA);
+  }
+
+  /*标注文字*/
+//  var label = new BMap.Label("我是文字标注哦",{offset:new BMap.Size(20,-10)});
+//  marker.setLabel(label);
+
+
+//  设置弹跳 pc可
+//  marker.setAnimation(BMAP_ANIMATION_BOUNCE); //跳动的动画
+
+  marker.enableDragging();  //标注可拖拽
+//  marker.disableDragging();  //标注不可拖拽
+  /*标注 end*/
+
+
+  map.setCurrentCity("北京");          // 设置地图显示的城市 此项是必须设置的 仅当设置城市信息时，MapTypeControl的切换功能才能可用
+
+
+
+  // !! 添加控件
+  // 可以使用Map.addControl()方法向地图添加控件。在此之前地图需要进行初始化。
+//  map.addControl(new BMap.NavigationControl());    // 平移&缩放 default: 左上(pc), 右下(mobile)
+  map.addControl(new BMap.NavigationControl({
+    type: BMAP_NAVIGATION_CONTROL_LARGE,  //default??
+//     type: BMAP_NAVIGATION_CONTROL_SMALL,
+//    type: BMAP_NAVIGATION_CONTROL_PAN, // 平移
+//    type: BMAP_NAVIGATION_CONTROL_ZOOM, // 缩放
+    enableGeolocation: true,  // 启用显示定位
+  }));
+  map.addControl(new BMap.OverviewMapControl());   // 缩略地图 default: 右下角
+
+  map.addControl(new BMap.ScaleControl({       // 比例尺
+    anchor: BMAP_ANCHOR_BOTTOM_RIGHT,
+    offset: new BMap.Size(250, 20)  //偏移
+  } ));  //位置
+
+  map.addControl(new BMap.MapTypeControl({ //  default: 地图&卫星&混合
+    mapTypes: [BMAP_NORMAL_MAP,BMAP_HYBRID_MAP]  // 地图&混合
+  }));
+
+  map.addControl(new BMap.CopyrightControl());     // 版权 default: 左下方
+
+  // !! 添加定位控件
+  var geolocationControl = new BMap.GeolocationControl();
+  geolocationControl.addEventListener("locationSuccess", function(e){
+    // 定位成功事件
+    var address = '';
+    address += e.addressComponent.province;
+    address += e.addressComponent.city;
+    address += e.addressComponent.district;
+    address += e.addressComponent.street;
+    address += e.addressComponent.streetNumber;
+    alert("当前定位地址为：" + address);
+  });
+  geolocationControl.addEventListener("locationError",function(e){
+    // 定位失败事件
+    alert(e.message);
+  });
+  map.addControl(geolocationControl);
+  //  map.addControl(new BMap.GeolocationControl());   // 定位(mobile) default: 左下方
+
+  map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放 default: false
+//  map.disableDragging();     //禁止拖拽
+//  map.disableDoubleClickZoom(false);
+
+
+
+  // 将地图显示范围设定在指定区域，地图拖出该区域后会重新弹回。
+  var b = new BMap.Bounds(new BMap.Point(116.027143, 39.772348),new BMap.Point(116.832025, 40.126349));
+  try {
+//    BMapLib.AreaRestriction.setBounds(map, b);
+  } catch (e) {
+    alert(e);
+  }
+
+  setTimeout(function(){
+    // 下面示例显示一个地图，等待两秒钟后，它会移动到新中心点。
+    // panTo()方法将让地图平滑移动至新中心点，如果移动距离超过了当前地图区域大小，则地图会直跳到该点。
+//    map.panTo(new BMap.Point(116.409, 39.918));
+//    map.setZoom(20); //2秒后放大到20级
+//    map.enableDragging();   //两秒后开启拖拽
+//    map.enableInertialDragging();   //两秒后开启惯性拖拽 -- 无效
+    deletePoint();
+  }, 2000);
+
+</script>
+</body>
+</html>
