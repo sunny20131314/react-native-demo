@@ -12,7 +12,14 @@ import {
 import FirstPageComponent from './AFirstPageComponent';
 import SecondPageComponent from './ASecondPageComponent';
 
+
+// 额外添加navigationBar的属性, 自定义设置导航栏, 保持所有页面的导航栏一致.
+// 属性添加<NavigationBar/>标签, 通过routeMapper控制导航栏的功能和样式.
+// NavigationBarRouteMapper: 导航栏路由映射器, 设置左键LeftButton, 右键RightButton, 标题Title.
 export default class RouteComponent extends React.Component {
+
+
+
   render() {
     //
     let ROUTE_STACK = [
@@ -32,6 +39,19 @@ export default class RouteComponent extends React.Component {
           ROUTE_STACK
         }
         initialRoute={ROUTE_STACK[INIT_ROUTE_INDEX]}
+        navigationBar={
+          <Navigator.NavigationBar
+            routeMapper={{
+              LeftButton: (route, navigator, index, navState) =>
+                { return (<Text>Cancel</Text>); },
+              RightButton: (route, navigator, index, navState) =>
+                { return (<Text>Done</Text>); },
+              Title: (route, navigator, index, navState) =>
+                { return (<Text>Awesome Nav Bar</Text>); },
+            }}
+            style={{backgroundColor: 'gray'}}
+          />
+        }
         configureScene={(route) => {
                 return Navigator.SceneConfigs.HorizontalSwipeJumpFromRight;
               }}
